@@ -13,7 +13,7 @@ export default function TicTacToe() {
   useEffect(() => {
     if (winner) return;
     if (isCPUNext) {
-      cPUPlay();
+      cpuPlayer();
     }
   }, [isCPUNext]);
 
@@ -36,20 +36,20 @@ export default function TicTacToe() {
     } while (currentDate - date < milliseconds);
   }
 
-  function cPUPlay() {
+  function cpuPlayer() {
     if (winner) return;
     sleep(1000);
 
-    const cPUMove = getCPUTurn();
+    const cpuMove = getCpuTurn();
 
-    board[cPUMove.arrayIndex][cPUMove.index] = players?.CPU?.SYM;
+    board[cpuMove.arrayIndex][cpuMove.index] = players?.CPU?.SYM;
 
     setBoard((board) => [...board]);
     checkWinner();
     setIsCPUNext(false);
   }
 
-  function getCPUTurn() {
+  function getCpuTurn() {
     const emptyIndexes: { arrayIndex: number; index: number }[] = [];
     board.forEach((row: string[], arrayIndex: number) => {
       row.forEach((cell: string, index: number) => {
@@ -62,7 +62,7 @@ export default function TicTacToe() {
     return emptyIndexes[randomIndex];
   }
 
-  function playFn(arrayIndex: number, index: number) {
+  function playRound(arrayIndex: number, index: number) {
     if (isCPUNext) return;
     if (winner) return;
     board[arrayIndex][index] = players?.HUMAN?.SYM;
@@ -128,15 +128,15 @@ export default function TicTacToe() {
     }
   }
 
-  function displayTurn() {
+  const displayTurn = () => {
     if (isCPUNext) {
-      return "CPU's turn";
+      return "X'S TURN";
     } else {
-      return 'Your turn';
+      return "O'S TURN";
     }
-  }
+  };
 
-  function playAgainFn() {
+  function playAgain() {
     setBoard([
       ['', '', ''],
       ['', '', ''],
@@ -148,38 +148,79 @@ export default function TicTacToe() {
 
   return (
     <div className="container">
-      <div className="col">
-        <span onClick={() => playFn(0, 0)} className="cell">
-          {board[0][0]}
-        </span>
-        <span onClick={() => playFn(0, 1)} className="cell">
-          {board[0][1]}
-        </span>
-        <span onClick={() => playFn(0, 2)} className="cell">
-          {board[0][2]}
-        </span>
+      <div className="current-turn" data-testid="turn-display">
+        {displayTurn()}
       </div>
-      <div className="col">
-        <span onClick={() => playFn(1, 0)} className="cell">
-          {board[1][0]}
-        </span>
-        <span onClick={() => playFn(1, 1)} className="cell">
-          {board[1][1]}
-        </span>
-        <span onClick={() => playFn(1, 2)} className="cell">
-          {board[1][2]}
-        </span>
-      </div>
-      <div className="col">
-        <span onClick={() => playFn(2, 0)} className="cell">
-          {board[2][0]}
-        </span>
-        <span onClick={() => playFn(2, 1)} className="cell">
-          {board[2][1]}
-        </span>
-        <span onClick={() => playFn(2, 2)} className="cell">
-          {board[2][2]}
-        </span>
+      <div className="board" data-testid="tictactoe-board">
+        <div className="board-row" data-testid="row-0">
+          <span
+            onClick={() => playRound(0, 0)}
+            className="cell border-bottom border-right"
+            data-testid="cell-0-0"
+          >
+            {board[0][0]}
+          </span>
+          <span
+            onClick={() => playRound(0, 1)}
+            className="cell border-bottom border-right"
+            data-testid="cell-0-1"
+          >
+            {board[0][1]}
+          </span>
+          <span
+            onClick={() => playRound(0, 2)}
+            className="cell border-bottom"
+            data-testid="cell-0-2"
+          >
+            {board[0][2]}
+          </span>
+        </div>
+        <div className="board-row" data-testid="row-1">
+          <span
+            onClick={() => playRound(1, 0)}
+            className="cell border-bottom border-right"
+            data-testid="cell-1-0"
+          >
+            {board[1][0]}
+          </span>
+          <span
+            onClick={() => playRound(1, 1)}
+            className="cell border-bottom border-right"
+            data-testid="cell-1-1"
+          >
+            {board[1][1]}
+          </span>
+          <span
+            onClick={() => playRound(1, 2)}
+            className="cell border-bottom"
+            data-testid="cell-1-2"
+          >
+            {board[1][2]}
+          </span>
+        </div>
+        <div className="board-row" data-testid="row-2">
+          <span
+            onClick={() => playRound(2, 0)}
+            className="cell border-right"
+            data-testid="cell-2-0"
+          >
+            {board[2][0]}
+          </span>
+          <span
+            onClick={() => playRound(2, 1)}
+            className="cell border-right"
+            data-testid="cell-2-1"
+          >
+            {board[2][1]}
+          </span>
+          <span
+            onClick={() => playRound(2, 2)}
+            className="cell"
+            data-testid="cell-2-2"
+          >
+            {board[2][2]}
+          </span>
+        </div>
       </div>
     </div>
   );
