@@ -1,0 +1,25 @@
+.toast-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    position: absolute;
+    height: 0;
+    width: 8.75rem;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 92.45%;
+    background: #5CB85C;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.102546));
+    opacity: 0;
+    transition: all 0.75s ease-in-out;
+}
+
+.visible {
+    opacity: 1;
+    height: 2.5rem;
+}

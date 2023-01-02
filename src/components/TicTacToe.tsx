@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './TicTacToe.css';
+import ToastNotification from './ToastNotification';
 
 interface TicTacToeProps {
   selectedPlayer: null | string;
@@ -152,6 +153,7 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
 
   return (
     <div className="container">
+      <ToastNotification message={'NOW IN GAME'} deleteTime={2000} />
       <div className="current-turn" data-testid="turn-display">
         {displayTurn()}
       </div>
