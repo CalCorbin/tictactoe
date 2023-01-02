@@ -6,7 +6,7 @@ describe('MatchScreen', () => {
   it('renders MatchScreen component', () => {
     setup();
     expect(
-      screen.getByText('Waiting to find your opponent')
+      screen.getByText('Waiting to find your opponent...')
     ).toBeInTheDocument();
   });
 });

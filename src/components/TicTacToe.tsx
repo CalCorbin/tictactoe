@@ -155,7 +155,7 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
       <div className="current-turn" data-testid="turn-display">
         {displayTurn()}
       </div>
-      <div className="board" data-testid="tictactoe-board">
+      <div className="board" data-testid="tictactoe-screen">
         <div className="board-row" data-testid="row-0">
           <span
             onClick={() => playRound(0, 0)}

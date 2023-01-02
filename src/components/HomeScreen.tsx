@@ -14,10 +14,10 @@ const HomeScreen = () => {
 
   const handleMatch = () => {
     setIsMatching(true);
-    // setTimeout(() => {
-    //   setIsMatching(false);
-    //   setGameStarted(true);
-    // }, 3000);
+    setTimeout(() => {
+      setIsMatching(false);
+      setGameStarted(true);
+    }, 3000);
   };
 
   if (isMatching) {
@@ -29,7 +29,7 @@ const HomeScreen = () => {
   }
 
   return (
-    <div className="homescreen" data-testid="homescreen">
+    <div className="homescreen" data-testid="home-screen">
       <div className="item">WELCOME</div>
       <div className="item">PICK YOUR PLAYER</div>
       <div className="item player-selection">
