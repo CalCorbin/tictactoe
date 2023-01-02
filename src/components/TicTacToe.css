@@ -3,12 +3,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg, #627A96 0%, #83B5C5 19.47%, #8DC7D4 39.07%, #93D2DC 82.24%, #95D6DF 100%);
     height: 100vh;
-    font-family: "Helvetica Neue", Helvetica, serif;
-    font-weight: 300;
-    font-size: 1.25rem;
-    color: #201238;
 }
 
 .current-turn {

@@ -1,10 +1,10 @@
 import React from 'react';
-import TicTacToe from "./components/TicTacToe";
+import HomeScreen from './components/HomeScreen';
 
 function App() {
   return (
     <div>
-     <TicTacToe />
+      <HomeScreen />
     </div>
   );
 }

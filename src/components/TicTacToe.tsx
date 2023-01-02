@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './TicTacToe.css';
 
-export default function TicTacToe() {
+interface TicTacToeProps {
+  selectedPlayer: null | string;
+}
+
+const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
   const [board, setBoard] = useState([
     ['', '', ''],
     ['', '', ''],
@@ -130,9 +134,9 @@ export default function TicTacToe() {
 
   const displayTurn = () => {
     if (isCPUNext) {
-      return "X'S TURN";
+      return `${selectedPlayer}'S TURN`;
     } else {
-      return "O'S TURN";
+      return `${selectedPlayer}'S TURN`;
     }
   };
 
@@ -224,4 +228,6 @@ export default function TicTacToe() {
       </div>
     </div>
   );
-}
+};
+
+export default TicTacToe;
