@@ -4,7 +4,7 @@ import MatchScreen from './MatchScreen';
 import TicTacToe from './TicTacToe';
 
 const HomeScreen = () => {
-  const [selectedPlayer, setSelectedPlayer] = useState<null | string>(null);
+  const [selectedPlayer, setSelectedPlayer] = useState('');
   const [isMatching, setIsMatching] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
 

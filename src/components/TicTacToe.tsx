@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './TicTacToe.css';
 import ToastNotification from './ToastNotification';
 
 interface TicTacToeProps {
-  selectedPlayer: null | string;
+  selectedPlayer: string;
 }
 
 const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
@@ -12,49 +12,25 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
     ['', '', ''],
     ['', '', ''],
   ]);
-  const [isCPUNext, setIsCPUNext] = useState(false);
+  const [isCpuNext, setIsCpuNext] = useState(false);
   const [winner, setWinner] = useState('');
 
-  useEffect(() => {
-    if (winner) return;
-    if (isCPUNext) {
-      cpuPlayer();
-    }
-  }, [isCPUNext]);
-
+  const opponent = selectedPlayer === 'x' ? 'O' : 'X';
   const players = {
     CPU: {
-      SYM: 'O',
+      SYM: opponent,
       NAME: 'CPU',
     },
     HUMAN: {
-      SYM: 'X',
+      SYM: selectedPlayer,
       NAME: 'You',
     },
   };
 
-  function sleep(milliseconds: number) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-      currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-  }
-
-  function cpuPlayer() {
-    if (winner) return;
-    sleep(1000);
-
-    const cpuMove = getCpuTurn();
-
-    board[cpuMove.arrayIndex][cpuMove.index] = players?.CPU?.SYM;
-
-    setBoard((board) => [...board]);
-    checkWinner();
-    setIsCPUNext(false);
-  }
-
-  function getCpuTurn() {
+  /**
+   * This function handles calculating the next move for the CPU.
+   */
+  const getCpuTurn = useCallback(() => {
     const emptyIndexes: { arrayIndex: number; index: number }[] = [];
     board.forEach((row: string[], arrayIndex: number) => {
       row.forEach((cell: string, index: number) => {
@@ -65,56 +41,50 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
     });
     const randomIndex = Math.floor(Math.random() * emptyIndexes.length);
     return emptyIndexes[randomIndex];
-  }
+  }, [board]);
 
-  function playRound(arrayIndex: number, index: number) {
-    if (isCPUNext) return;
-    if (winner) return;
-    board[arrayIndex][index] = players?.HUMAN?.SYM;
-    setBoard((board) => [...board]);
-    checkWinner();
-    setIsCPUNext(true);
-  }
-
-  function checkWinner() {
-    // check same row
+  /**
+   * This function handles checking if a player has won the game.
+   */
+  const checkForWinner = useCallback(() => {
+    // Check rows for a winning playing.
     for (let index = 0; index < board.length; index++) {
       const row = board[index];
       if (row.every((cell) => cell === players?.CPU?.SYM)) {
-        setWinner(players?.CPU?.NAME);
+        setWinner(players?.CPU?.SYM);
         return;
       } else if (row.every((cell) => cell === players?.HUMAN?.SYM)) {
-        setWinner(players?.HUMAN?.NAME);
+        setWinner(players?.HUMAN?.SYM);
         return;
       }
     }
 
-    // check same column
+    // Check columns for a winning play.
     for (let i = 0; i < 3; i++) {
       const column = board.map((row) => row[i]);
       if (column.every((cell) => cell === players?.CPU?.SYM)) {
-        setWinner(players?.CPU?.NAME);
+        setWinner(players?.CPU?.SYM);
         return;
       } else if (column.every((cell) => cell === players?.HUMAN?.SYM)) {
-        setWinner(players?.HUMAN?.NAME);
+        setWinner(players?.HUMAN?.SYM);
         return;
       }
     }
 
-    // check same diagonal
+    // Check diagonally for a winning play.
     const diagonal1 = [board[0][0], board[1][1], board[2][2]];
     const diagonal2 = [board[0][2], board[1][1], board[2][0]];
     if (diagonal1.every((cell) => cell === players?.CPU?.SYM)) {
-      setWinner(players?.CPU?.NAME);
+      setWinner(players?.CPU?.SYM);
       return;
     } else if (diagonal1.every((cell) => cell === players?.HUMAN?.SYM)) {
-      setWinner(players?.HUMAN?.NAME);
+      setWinner(players?.HUMAN?.SYM);
       return;
     } else if (diagonal2.every((cell) => cell === players?.CPU?.SYM)) {
-      setWinner(players?.CPU?.NAME);
+      setWinner(players?.CPU?.SYM);
       return;
     } else if (diagonal2.every((cell) => cell === players?.HUMAN?.SYM)) {
-      setWinner(players?.HUMAN?.NAME);
+      setWinner(players?.HUMAN?.SYM);
       return;
     } else if (board.flat().every((cell) => cell !== '')) {
       setWinner('draw');
@@ -123,41 +93,84 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
       setWinner('');
       return;
     }
-  }
+  }, [board, players]);
 
-  function displayWinner() {
-    if (winner === 'draw') {
-      return "It's a draw!";
-    } else if (winner) {
-      return `${winner} won!`;
+  /**
+   * This function is called when it's the CPU's turn.
+   */
+  const playCpuTurn = useCallback(() => {
+    const cpuMove = getCpuTurn();
+
+    board[cpuMove.arrayIndex][cpuMove.index] = players?.CPU?.SYM;
+
+    setBoard((board) => [...board]);
+    checkForWinner();
+    setIsCpuNext(false);
+  }, [getCpuTurn, checkForWinner, setBoard, board, players]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (winner) return;
+    if (isCpuNext) {
+      setTimeout(() => {
+        playCpuTurn();
+      }, 2000);
     }
-  }
+
+    return () => clearTimeout(timer);
+  }, [playCpuTurn, board, winner, isCpuNext]);
+
+  /**
+   * This function handles the player's turn.
+   * @param row {number} - The row selected by the player.
+   * @param index {number} - The index within the row selected by the player.
+   */
+  const playRound = (row: number, index: number) => {
+    if (isCpuNext) return;
+    if (winner) return;
+    board[row][index] = players?.HUMAN?.SYM;
+    setBoard((board) => [...board]);
+    checkForWinner();
+    setIsCpuNext(true);
+  };
+
+  /**
+   * This function handles the display text for the winner.
+   */
+  const displayWinner = () => {
+    if (winner === 'draw') {
+      return "IT'S A DRAW!";
+    } else if (winner) {
+      return `${winner} WINS!`;
+    }
+  };
 
   const displayTurn = () => {
-    if (isCPUNext) {
-      return `${selectedPlayer}'S TURN`;
+    if (isCpuNext) {
+      return `${opponent}'S TURN`;
     } else {
       return `${selectedPlayer}'S TURN`;
     }
   };
 
-  function playAgain() {
+  const playAgain = () => {
     setBoard([
       ['', '', ''],
       ['', '', ''],
       ['', '', ''],
     ]);
     setWinner('');
-    setIsCPUNext(false);
-  }
+    setIsCpuNext(false);
+  };
 
   return (
     <div className="container">
       <ToastNotification message={'NOW IN GAME'} deleteTime={2000} />
       <div className="current-turn" data-testid="turn-display">
-        {displayTurn()}
+        {winner ? displayWinner() : displayTurn()}
       </div>
-      <div className="board" data-testid="tictactoe-screen">
+      <div data-testid="tictactoe-screen">
         <div className="board-row" data-testid="row-0">
           <span
             onClick={() => playRound(0, 0)}
@@ -228,6 +241,14 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
           </span>
         </div>
       </div>
+      {winner && (
+        <div className="post-game-container">
+          <button className="game-button" onClick={playAgain}>
+            PLAY AGAIN
+          </button>
+          <button className="game-button">SEE RECORD</button>
+        </div>
+      )}
     </div>
   );
 };
