@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import './TicTacToe.css';
 import ToastNotification from './ToastNotification';
 
@@ -24,10 +24,13 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
   });
 
   const opponent: PlayerOption = selectedPlayer === 'X' ? 'O' : 'X';
-  const players: Players = {
-    CPU: selectedPlayer,
-    HUMAN: opponent,
-  };
+  const players = useMemo<Players>(
+    () => ({
+      CPU: selectedPlayer,
+      HUMAN: opponent,
+    }),
+    [selectedPlayer, opponent]
+  );
 
   /**
    * This function handles calculating the next move for the CPU.
