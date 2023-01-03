@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import TicTacToe from './TicTacToe';
+import TicTacToe, { PlayerOption } from './TicTacToe';
 
 describe('TicTacToe', () => {
   it('renders TicTacToe component', () => {
-    render(<TicTacToe selectedPlayer="x" />);
+    const playerOption: PlayerOption = 'X';
+    render(<TicTacToe selectedPlayer={playerOption} />);
     expect(screen.getByTestId('tictactoe-screen')).toBeInTheDocument();
   });
 });

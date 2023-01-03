@@ -2,9 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './TicTacToe.css';
 import ToastNotification from './ToastNotification';
 
+export type PlayerOption = 'X' | 'O' | '';
 interface TicTacToeProps {
-  selectedPlayer: string;
+  selectedPlayer: PlayerOption;
 }
+type GameRecord = Record<PlayerOption, number>;
+type Players = Record<'CPU' | 'HUMAN', PlayerOption>;
 
 const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
   const [board, setBoard] = useState([
@@ -14,17 +17,16 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
   ]);
   const [isCpuNext, setIsCpuNext] = useState(false);
   const [winner, setWinner] = useState('');
+  const [record, setRecord] = useState<GameRecord>({
+    X: 0,
+    O: 0,
+    '': 0,
+  });
 
-  const opponent = selectedPlayer === 'x' ? 'O' : 'X';
-  const players = {
-    CPU: {
-      SYM: opponent,
-      NAME: 'CPU',
-    },
-    HUMAN: {
-      SYM: selectedPlayer,
-      NAME: 'You',
-    },
+  const opponent: PlayerOption = selectedPlayer === 'X' ? 'O' : 'X';
+  const players: Players = {
+    CPU: selectedPlayer,
+    HUMAN: opponent,
   };
 
   /**
@@ -50,11 +52,19 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
     // Check rows for a winning playing.
     for (let index = 0; index < board.length; index++) {
       const row = board[index];
-      if (row.every((cell) => cell === players?.CPU?.SYM)) {
-        setWinner(players?.CPU?.SYM);
+      if (row.every((cell) => cell === players?.CPU)) {
+        setWinner(players?.CPU);
+        setRecord({
+          ...record,
+          [players?.CPU]: record[players?.CPU] + 1,
+        });
         return;
-      } else if (row.every((cell) => cell === players?.HUMAN?.SYM)) {
-        setWinner(players?.HUMAN?.SYM);
+      } else if (row.every((cell) => cell === players?.HUMAN)) {
+        setWinner(players?.HUMAN);
+        setRecord({
+          ...record,
+          [players?.HUMAN]: record[players?.HUMAN] + 1,
+        });
         return;
       }
     }
@@ -62,11 +72,19 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
     // Check columns for a winning play.
     for (let i = 0; i < 3; i++) {
       const column = board.map((row) => row[i]);
-      if (column.every((cell) => cell === players?.CPU?.SYM)) {
-        setWinner(players?.CPU?.SYM);
+      if (column.every((cell) => cell === players?.CPU)) {
+        setWinner(players?.CPU);
+        setRecord({
+          ...record,
+          [players?.CPU]: record[players?.CPU === 'X' ? 'X' : 'O'] + 1,
+        });
         return;
-      } else if (column.every((cell) => cell === players?.HUMAN?.SYM)) {
-        setWinner(players?.HUMAN?.SYM);
+      } else if (column.every((cell) => cell === players?.HUMAN)) {
+        setWinner(players?.HUMAN);
+        setRecord({
+          ...record,
+          [players?.HUMAN]: record[players?.HUMAN === 'X' ? 'X' : 'O'] + 1,
+        });
         return;
       }
     }
@@ -74,17 +92,33 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
     // Check diagonally for a winning play.
     const diagonal1 = [board[0][0], board[1][1], board[2][2]];
     const diagonal2 = [board[0][2], board[1][1], board[2][0]];
-    if (diagonal1.every((cell) => cell === players?.CPU?.SYM)) {
-      setWinner(players?.CPU?.SYM);
+    if (diagonal1.every((cell) => cell === players?.CPU)) {
+      setWinner(players?.CPU);
+      setRecord({
+        ...record,
+        [players?.CPU]: record[players?.CPU === 'X' ? 'X' : 'O'] + 1,
+      });
       return;
-    } else if (diagonal1.every((cell) => cell === players?.HUMAN?.SYM)) {
-      setWinner(players?.HUMAN?.SYM);
+    } else if (diagonal1.every((cell) => cell === players?.HUMAN)) {
+      setWinner(players?.HUMAN);
+      setRecord({
+        ...record,
+        [players?.HUMAN]: record[players?.HUMAN === 'X' ? 'X' : 'O'] + 1,
+      });
       return;
-    } else if (diagonal2.every((cell) => cell === players?.CPU?.SYM)) {
-      setWinner(players?.CPU?.SYM);
+    } else if (diagonal2.every((cell) => cell === players?.CPU)) {
+      setWinner(players?.CPU);
+      setRecord({
+        ...record,
+        [players?.CPU]: record[players?.CPU === 'X' ? 'X' : 'O'] + 1,
+      });
       return;
-    } else if (diagonal2.every((cell) => cell === players?.HUMAN?.SYM)) {
-      setWinner(players?.HUMAN?.SYM);
+    } else if (diagonal2.every((cell) => cell === players?.HUMAN)) {
+      setWinner(players?.HUMAN);
+      setRecord({
+        ...record,
+        [players?.HUMAN]: record[players?.HUMAN === 'X' ? 'X' : 'O'] + 1,
+      });
       return;
     } else if (board.flat().every((cell) => cell !== '')) {
       setWinner('draw');
@@ -93,7 +127,7 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
       setWinner('');
       return;
     }
-  }, [board, players]);
+  }, [record, board, players]);
 
   /**
    * This function is called when it's the CPU's turn.
@@ -101,25 +135,12 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
   const playCpuTurn = useCallback(() => {
     const cpuMove = getCpuTurn();
 
-    board[cpuMove.arrayIndex][cpuMove.index] = players?.CPU?.SYM;
+    board[cpuMove.arrayIndex][cpuMove.index] = players?.CPU;
 
     setBoard((board) => [...board]);
     checkForWinner();
     setIsCpuNext(false);
   }, [getCpuTurn, checkForWinner, setBoard, board, players]);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-
-    if (winner) return;
-    if (isCpuNext) {
-      setTimeout(() => {
-        playCpuTurn();
-      }, 2000);
-    }
-
-    return () => clearTimeout(timer);
-  }, [playCpuTurn, board, winner, isCpuNext]);
 
   /**
    * This function handles the player's turn.
@@ -129,7 +150,7 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
   const playRound = (row: number, index: number) => {
     if (isCpuNext) return;
     if (winner) return;
-    board[row][index] = players?.HUMAN?.SYM;
+    board[row][index] = players?.HUMAN;
     setBoard((board) => [...board]);
     checkForWinner();
     setIsCpuNext(true);
@@ -146,6 +167,9 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
     }
   };
 
+  /**
+   * This function handles displaying the current players turn.
+   */
   const displayTurn = () => {
     if (isCpuNext) {
       return `${opponent}'S TURN`;
@@ -154,6 +178,9 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
     }
   };
 
+  /**
+   * This function handles resetting the game.
+   */
   const playAgain = () => {
     setBoard([
       ['', '', ''],
@@ -163,6 +190,23 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
     setWinner('');
     setIsCpuNext(false);
   };
+
+  /**
+   * This useEffect handles updating the board to simulate the CPU's turn.
+   */
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (winner) return;
+    if (isCpuNext) {
+      // Here we use setTimeout to simulate the CPU's turn, 2000 milliseconds gives
+      // the appearance of the CPU thinking.
+      setTimeout(() => {
+        playCpuTurn();
+      }, 2000);
+    }
+
+    return () => clearTimeout(timer);
+  }, [playCpuTurn, board, winner, isCpuNext]);
 
   return (
     <div className="container">

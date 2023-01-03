@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import './HomeScreen.css';
 import MatchScreen from './MatchScreen';
-import TicTacToe from './TicTacToe';
+import TicTacToe, { PlayerOption } from './TicTacToe';
 
 const HomeScreen = () => {
-  const [selectedPlayer, setSelectedPlayer] = useState('');
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerOption>('');
   const [isMatching, setIsMatching] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
 
-  const handlePlayerSelect = (player: string) => {
+  const handlePlayerSelect = (player: PlayerOption) => {
     setSelectedPlayer(player);
   };
 
@@ -35,25 +35,25 @@ const HomeScreen = () => {
       <div className="item player-selection">
         <div
           className="player-selection__player"
-          onClick={() => handlePlayerSelect('x')}
+          onClick={() => handlePlayerSelect('X')}
         >
           <span>X</span>
           <hr
             data-testid="player-x-underline"
             className={`player-selection__underline ${
-              selectedPlayer === 'x' ? 'active' : ''
+              selectedPlayer === 'X' ? 'active' : ''
             }`}
           />
         </div>
         <div
           className="player-selection__player"
-          onClick={() => handlePlayerSelect('o')}
+          onClick={() => handlePlayerSelect('O')}
         >
           <span>O</span>
           <hr
             data-testid="player-o-underline"
             className={`player-selection__underline ${
-              selectedPlayer === 'o' ? 'active' : ''
+              selectedPlayer === 'O' ? 'active' : ''
             }`}
           />
         </div>
