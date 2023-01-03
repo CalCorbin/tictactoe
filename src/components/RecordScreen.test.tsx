@@ -6,6 +6,8 @@ describe('RecordScreen', () => {
 
   it('renders RecordScreen component', () => {
     setup();
-    expect(screen.getByText(/yay/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/This screen will display the players record/)
+    ).toBeInTheDocument();
   });
 });
