@@ -3,9 +3,9 @@ import './TicTacToe.css';
 import ToastNotification from './ToastNotification';
 
 export type PlayerOption = 'X' | 'O' | '';
-interface TicTacToeProps {
+type TicTacToeProps = {
   selectedPlayer: PlayerOption;
-}
+};
 type GameRecord = Record<PlayerOption, number>;
 type Players = Record<'CPU' | 'HUMAN', PlayerOption>;
 
