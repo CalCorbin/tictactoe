@@ -26,8 +26,8 @@ const TicTacToe = ({ selectedPlayer }: TicTacToeProps) => {
   const opponent: PlayerOption = selectedPlayer === 'X' ? 'O' : 'X';
   const players = useMemo<Players>(
     () => ({
-      CPU: selectedPlayer,
-      HUMAN: opponent,
+      CPU: opponent,
+      HUMAN: selectedPlayer,
     }),
     [selectedPlayer, opponent]
   );
